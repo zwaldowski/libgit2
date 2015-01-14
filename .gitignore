@@ -33,3 +33,6 @@ tags
 mkmf.log
 *.profdata
 *.profraw
+
+#swisspol
+xcode
