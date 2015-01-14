@@ -31,3 +31,6 @@ msvc/Release/
 .*.swp
 tags
 mkmf.log
+
+#swisspol
+xcode
