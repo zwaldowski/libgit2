@@ -224,6 +224,13 @@ GIT_EXTERN(int) git_submodule_lookup(
 	const char *name);
 
 /**
+ * Retains a submodule
+ *
+ * @param submodule Submodule object
+ */
+GIT_EXTERN(void) git_submodule_retain(git_submodule *submodule);
+
+/**
  * Release a submodule
  *
  * @param submodule Submodule object
