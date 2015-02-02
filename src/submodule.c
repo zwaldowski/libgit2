@@ -1767,6 +1767,12 @@ static void submodule_release(git_submodule *sm)
 	git__free(sm);
 }
 
+void git_submodule_retain(git_submodule *sm)
+{
+	assert(sm);
+	GIT_REFCOUNT_INC(sm);
+}
+
 void git_submodule_free(git_submodule *sm)
 {
 	if (!sm)
