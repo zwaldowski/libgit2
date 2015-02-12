@@ -216,10 +216,13 @@ static int diff_patch_generate(git_patch *patch, git_diff_output *output)
 
 	/* if we are not looking at the hunks and lines, don't do the diff */
 	if (!output->hunk_cb && !output->data_cb)
-		return 0;
+		return diff_patch_invoke_file_callback(patch, output);
 
 	if ((patch->flags & GIT_DIFF_PATCH_LOADED) == 0 &&
 		(error = diff_patch_load(patch, output)) < 0)
+		return error;
+
+	if ((error = diff_patch_invoke_file_callback(patch, output)) < 0)
 		return error;
 
 	if ((patch->flags & GIT_DIFF_PATCH_DIFFABLE) == 0)
@@ -284,12 +287,12 @@ int git_diff_foreach(
 		if (git_diff_delta__should_skip(&diff->opts, patch.delta))
 			continue;
 
-		if ((error = diff_patch_invoke_file_callback(&patch, &xo.output)) == 0) {
-			if (hunk_cb || data_cb) {
-				if ((error = diff_patch_init_from_diff(&patch, diff, idx)) == 0)
-					error = diff_patch_generate(&patch, &xo.output);
-			}
-		}
+		if (hunk_cb || data_cb) {
+			if ((error = diff_patch_init_from_diff(&patch, diff, idx)) == 0)
+				error = diff_patch_generate(&patch, &xo.output);
+		} else
+			/* no need to create a patch: just call the file callback directly */
+			error = diff_patch_invoke_file_callback(&patch, &xo.output);
 
 		git_patch_free(&patch);
 
@@ -328,10 +331,7 @@ static int diff_single_generate(diff_patch_with_delta *pd, git_xdiff_output *xo)
 		!(patch->ofile.opts_flags & GIT_DIFF_INCLUDE_UNMODIFIED))
 		return error;
 
-	error = diff_patch_invoke_file_callback(patch, (git_diff_output *)xo);
-
-	if (!error)
-		error = diff_patch_generate(patch, (git_diff_output *)xo);
+	error = diff_patch_generate(patch, (git_diff_output *)xo);
 
 	return error;
 }
@@ -608,10 +608,7 @@ int git_patch_from_diff(
 	diff_output_to_patch(&xo.output, patch);
 	git_xdiff_init(&xo, &diff->opts);
 
-	error = diff_patch_invoke_file_callback(patch, &xo.output);
-
-	if (!error)
-		error = diff_patch_generate(patch, &xo.output);
+	error = diff_patch_generate(patch, &xo.output);
 
 	if (!error) {
 		/* TODO: if cumulative diff size is < 0.5 total size, flatten patch */
