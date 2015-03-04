@@ -234,6 +234,13 @@ GIT_EXTERN(int) git_branch_upstream_name(
 	git_repository *repo,
 	const char *refname);
 
+// PATCH
+GIT_EXTERN(int) git_branch_upstream_name_from_merge_remote_names(
+	git_buf *out,
+	git_repository *repo,
+	const char *remote_name,
+	const char *merge_name);
+
 /**
  * Determine if the current local branch is pointed at by HEAD.
  *
