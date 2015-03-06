@@ -294,6 +294,9 @@ GIT_EXTERN(int) git_branch_remote_name(
  */
  GIT_EXTERN(int) git_branch_upstream_remote(git_buf *buf, git_repository *repo, const char *refname);
 
+// PATCH
+GIT_EXTERN(int) git_branch_upstream_merge(git_buf *buf, git_repository *repo, const char *refname);
+
 /** @} */
 GIT_END_DECL
 #endif
