@@ -411,7 +411,7 @@ cleanup:
 	return error;
 }
 
-int git_branch_upstream_remote(git_buf *buf, git_repository *repo, const char *refname)
+static int branch_upstream_config(git_buf *buf, git_repository *repo, const char *refname, const char* format)
 {
 	int error;
 	git_config *cfg;
@@ -424,7 +424,7 @@ int git_branch_upstream_remote(git_buf *buf, git_repository *repo, const char *r
 
 	git_buf_sanitize(buf);
 
-	if ((error = retrieve_upstream_configuration(buf, cfg, refname, "branch.%s.remote")) < 0)
+	if ((error = retrieve_upstream_configuration(buf, cfg, refname, format)) < 0)
 		return error;
 
 	if (git_buf_len(buf) == 0) {
@@ -434,6 +434,16 @@ int git_branch_upstream_remote(git_buf *buf, git_repository *repo, const char *r
 	}
 
 	return error;
+}
+
+int git_branch_upstream_remote(git_buf *buf, git_repository *repo, const char *refname)
+{
+	return branch_upstream_config(buf, repo, refname, "branch.%s.remote");
+}
+
+int git_branch_upstream_merge(git_buf *buf, git_repository *repo, const char *refname)
+{
+	return branch_upstream_config(buf, repo, refname, "branch.%s.merge");
 }
 
 int git_branch_remote_name(git_buf *buf, git_repository *repo, const char *refname)
