@@ -204,6 +204,26 @@ GIT_EXTERN(int) git_clone(
 	const char *local_path,
 	const git_clone_options *options);
 
+/**
+ * Clone a remote repository into an existing empty repository using
+ * a pre-existing remote.
+ *
+ * @param repo the repository to clone into
+ * @param remote the remote to use for cloning
+ * @param fetch_opts the fetch options to use
+ * @param checkout_opts the checkout options to use
+ * @param branch name of the branch to checkout (NULL means use the
+ *        remote's default branch)
+ * @return 0 on success, any non-zero return value from a callback
+ *         function, or a negative value to indicate an error
+ */
+GIT_EXTERN(int) git_clone_into(
+	git_repository *repo,
+	git_remote *remote,
+	const git_fetch_options *fetch_opts,
+	const git_checkout_options *checkout_opts,
+	const char *branch);
+
 /** @} */
 GIT_END_DECL
 #endif
