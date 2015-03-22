@@ -455,6 +455,17 @@ int git_clone(
 	return error;
 }
 
+int git_clone_into(
+	git_repository *repo,
+	git_remote *remote,
+	const git_fetch_options *fetch_opts,
+	const git_checkout_options *checkout_opts,
+	const char *branch)
+{
+	assert(repo && remote && fetch_opts && checkout_opts);
+	return clone_into(repo, remote, fetch_opts, checkout_opts, branch);
+}
+
 int git_clone_init_options(git_clone_options *opts, unsigned int version)
 {
 	GIT_INIT_STRUCTURE_FROM_TEMPLATE(
