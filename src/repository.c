@@ -2059,6 +2059,21 @@ int git_repository_set_workdir(
 	return error;
 }
 
+int git_repository_update_gitlink(
+	git_repository *repo,
+	int use_relative_path)
+{
+	int error;
+
+	if ((error = git_futils_mkdir(repo->workdir, 0777, GIT_MKDIR_PATH | GIT_MKDIR_VERIFY_DIR)) < 0)
+		return error;
+
+	if ((error = repo_write_gitlink(repo->workdir, git_repository_path(repo), use_relative_path)) < 0)
+		return error;
+
+	return 0;
+}
+
 int git_repository_is_bare(git_repository *repo)
 {
 	assert(repo);
