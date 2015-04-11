@@ -511,6 +511,12 @@ GIT_EXTERN(int) git_repository_set_workdir(
 	git_repository *repo, const char *workdir, int update_gitlink);
 
 /**
+ * Update or rewrite the gitlink in the workdir
+ */
+GIT_EXTERN(int) git_repository_update_gitlink(
+	git_repository *repo, int use_relative_path);
+
+/**
  * Check if a repository is bare
  *
  * @param repo Repo to test
