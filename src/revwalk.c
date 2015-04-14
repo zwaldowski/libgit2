@@ -126,8 +126,13 @@ static int process_commit_parents(git_revwalk *walk, git_commit_list_node *commi
 	if (walk->first_parent && commit->out_degree)
 		max = 1;
 
-	for (i = 0; i < max && !error; ++i)
+	for (i = 0; i < max && !error; ++i) {
 		error = process_commit(walk, commit->parents[i], commit->uninteresting);
+		if (error == GIT_ENOTFOUND) {
+			error = 0;  /* Skip over missing commits from the ODB */
+			giterr_clear();
+		}
+	}
 
 	return error;
 }
