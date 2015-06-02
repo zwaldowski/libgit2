@@ -284,6 +284,10 @@ typedef struct {
 	git_off_t   size;
 	uint32_t    flags;
 	uint16_t    mode;
+
+	// PATCH
+	git_time_t ctime;
+	git_time_t mtime;
 } git_diff_file;
 
 /**

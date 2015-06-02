@@ -151,11 +151,15 @@ static int diff_delta__from_one(
 		delta->old_file.size = entry->file_size;
 		delta->old_file.flags |= GIT_DIFF_FLAG_EXISTS;
 		git_oid_cpy(&delta->old_file.id, &entry->id);
+		delta->old_file.mtime = entry->mtime.seconds;
+		delta->old_file.ctime = entry->ctime.seconds;
 	} else /* ADDED, IGNORED, UNTRACKED */ {
 		delta->new_file.mode = entry->mode;
 		delta->new_file.size = entry->file_size;
 		delta->new_file.flags |= GIT_DIFF_FLAG_EXISTS;
 		git_oid_cpy(&delta->new_file.id, &entry->id);
+		delta->new_file.mtime = entry->mtime.seconds;
+		delta->new_file.ctime = entry->ctime.seconds;
 	}
 
 	delta->old_file.flags |= GIT_DIFF_FLAG_VALID_ID;
@@ -210,6 +214,8 @@ static int diff_delta__from_two(
 		git_oid_cpy(&delta->old_file.id, old_id);
 		delta->old_file.flags |= GIT_DIFF_FLAG_VALID_ID |
 			GIT_DIFF_FLAG_EXISTS;
+		delta->old_file.mtime = old_entry->mtime.seconds;
+		delta->old_file.ctime = old_entry->ctime.seconds;
 	}
 
 	if (!git_index_entry_is_conflict(new_entry)) {
@@ -218,6 +224,8 @@ static int diff_delta__from_two(
 		delta->new_file.mode = new_mode;
 		delta->old_file.flags |= GIT_DIFF_FLAG_EXISTS;
 		delta->new_file.flags |= GIT_DIFF_FLAG_EXISTS;
+		delta->new_file.mtime = new_entry->mtime.seconds;
+		delta->new_file.ctime = new_entry->ctime.seconds;
 
 		if (!git_oid_iszero(&new_entry->id))
 			delta->new_file.flags |= GIT_DIFF_FLAG_VALID_ID;
