@@ -360,11 +360,13 @@ static int _git_ssh_authenticate_session(
 		case GIT_CREDTYPE_SSH_KEY: {
 			git_cred_ssh_key *c = (git_cred_ssh_key *)cred;
 
-			if (c->privatekey)
+			if (c->privatekey) {
 				rc = libssh2_userauth_publickey_fromfile(
 					session, c->username, c->publickey,
 					c->privatekey, c->passphrase);
-			else
+				if (rc == LIBSSH2_ERROR_FILE || rc == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED)  /* PATCH: Invalid key file */
+					rc = LIBSSH2_ERROR_AUTHENTICATION_FAILED;
+			} else
 				rc = ssh_agent_auth(session, c);
 
 			break;
