@@ -46,8 +46,6 @@ static const char *post_verb = "POST";
 
 #define PARSE_ERROR_GENERIC	-1
 #define PARSE_ERROR_REPLAY	-2
-/** Look at the user field */
-#define PARSE_ERROR_EXT         -3
 
 #define CHUNK_SIZE	4096
 
@@ -105,7 +103,6 @@ typedef struct {
 	char *location;
 	enum last_cb last_cb;
 	int parse_error;
-	int error;
 	unsigned parse_finished : 1,
 	    replay_count : 3;
 } http_subtransport;
@@ -423,9 +420,8 @@ static int on_auth_required(
 		if (ret == GIT_PASSTHROUGH) {
 			/* treat GIT_PASSTHROUGH as if callback isn't set */
 		} else if (ret < 0) {
-			t->error = ret;
-			t->parse_error = PARSE_ERROR_EXT;
-			return t->parse_error;
+			git_error_set(GIT_ERROR_NET, "credentials callback returned an error");
+			return t->parse_error = ret;
 		} else {
 			assert(*creds);
 
@@ -896,7 +892,7 @@ replay:
 			goto replay;
 
 		if (t->parse_error < 0) {
-			error = t->parse_error == PARSE_ERROR_EXT ? PARSE_ERROR_EXT : -1;
+			error = t->parse_error;
 			goto done;
 		}
 
@@ -1121,12 +1117,8 @@ replay:
 			goto replay;
 		}
 
-		if (t->parse_error == PARSE_ERROR_EXT) {
-			return t->error;
-		}
-
 		if (t->parse_error < 0)
-			return -1;
+			return t->parse_error;
 
 		if (bytes_parsed != t->parse_buffer.offset - data_offset) {
 			git_error_set(GIT_ERROR_NET,

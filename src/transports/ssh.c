@@ -450,6 +450,7 @@ static int request_creds(git_cred **out, ssh_subtransport *t, const char *user, 
 		if (error == GIT_PASSTHROUGH) {
 			no_callback = 1;
 		} else if (error < 0) {
+			git_error_set(GIT_ERROR_SSH, "credentials callback returned an error");
 			return error;
 		} else if (!cred) {
 			git_error_set(GIT_ERROR_SSH, "callback failed to initialize SSH credentials");
