@@ -444,8 +444,10 @@ static int request_creds(git_cred **out, ssh_subtransport *t, const char *user, 
 
 		if (error == GIT_PASSTHROUGH)
 			no_callback = 1;
-		else if (error < 0)
+		else if (error < 0) {
+			giterr_set(GITERR_SSH, "credentials callback returned an error");
 			return error;
+		}
 		else if (!cred) {
 			giterr_set(GITERR_SSH, "callback failed to initialize SSH credentials");
 			return -1;
