@@ -34,6 +34,7 @@ typedef int GIT_SOCKET;
 #endif
 
 #define p_utimes(f, t) utimes(f, t)
+#define p_futimes(f, t) futimes(f, t)
 
 #define p_readlink(a, b, c) readlink(a, b, c)
 #define p_symlink(o,n) symlink(o, n)
@@ -70,20 +71,6 @@ GIT_INLINE(int) p_fsync(int fd)
 #define p_gmtime_r(c, r) gmtime_r(c, r)
 
 #define p_timeval timeval
-
-#ifdef HAVE_FUTIMENS
-GIT_INLINE(int) p_futimes(int f, const struct p_timeval t[2])
-{
-	struct timespec s[2];
-	s[0].tv_sec = t[0].tv_sec;
-	s[0].tv_nsec = t[0].tv_usec * 1000;
-	s[1].tv_sec = t[1].tv_sec;
-	s[1].tv_nsec = t[1].tv_usec * 1000;
-	return futimens(f, s);
-}
-#else
-# define p_futimes futimes
-#endif
 
 #ifdef HAVE_REGCOMP_L
 #include <xlocale.h>
